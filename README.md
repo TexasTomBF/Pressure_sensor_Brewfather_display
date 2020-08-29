@@ -10,3 +10,5 @@ A 0-3bar (0-45psi) pressure sensor with display and WIFI, sends pressure data to
 Make sure to input your SSDI and password plus your API key to Brewfather before compiling and uploading to Wemos.
 
 The sensor will still display pressure with no WIFI or BF connectivity.
+
+You could also skip the display and just use it to publish pressure data to BrewFather
