@@ -11,20 +11,19 @@ long WIFI_status = 0;
 float PressureValue_raw = 0.0;
 float PressureValue_corr = 0.0;
 float PressureValue = 0.00;
-float PressureValue2 = 0.0;
 String PressureValue_string; // Buffer big enough for 7-character float
 String PressureValue_LCD;
 
 int WIFI = 0;
 
-char ssid[] = "XXXXX";     //  your network SSID (name)
-char pass[] = "XXXXX";     // your network password
+char ssid[] = "xxxxxxxx";     //  your network SSID (name)
+char pass[] = "xxxxxxxxx";  // your network password
 
 //Pressure sensor calibration coefficients, can be tweaked for each sensor used
 const float coeffBar = 0.0037;
 const float cal_offset = 0.66;
 
-U8X8_SSD1306_128X64_NONAME_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);
+U8X8_SH1106_128X64_NONAME_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);
 
 #define BF_15min 900000
 #define WIFI_retry 300000
@@ -76,17 +75,20 @@ void loop() {
   Serial.print("PressureValue_raw: ");
   Serial.println(PressureValue_raw);
 
+  
+
   PressureValue_corr = (PressureValue_raw - 105);
 
-  if (PressureValue_corr > 0)   //check that pressure is above zero
+Serial.print("PressureValue_corr: ");
+  Serial.println(PressureValue_corr);
+
+  if (int(PressureValue_corr) > 80)   //check that pressure is above zero
   {
     PressureValue = (PressureValue_raw * coeffBar) - cal_offset;
   }
 
   PressureValue_LCD = String(PressureValue);
-  Serial.print("PressureValue_LCD: ");
-  Serial.println(PressureValue_LCD);
-
+  
 //Print pressurevalue and 'bar' to display
   u8x8.setFont(u8x8_font_inr46_4x8_n);
   u8x8.setCursor(0, 0);
@@ -97,15 +99,13 @@ void loop() {
   if (WiFi.status() != WL_CONNECTED) {  //If no WIFI connection, show a 'x' in the display
 
     u8x8.setFont(u8x8_font_open_iconic_check_1x1);
-    //u8x8.setCursor(2, 7);
+ 
     u8x8.drawString(5, 3, "\x44");
   }
 
   PressureValue_string = String(PressureValue);
 
-  Serial.print("PressureValue_string: ");
-  Serial.println(PressureValue_string);
-
+ 
   if ((millis() - WIFI_status) > long(WIFI_retry) && (WiFi.status() != WL_CONNECTED)) {
     WiFi.begin(ssid, pass);
     WIFI_status = millis();
@@ -118,10 +118,10 @@ void loop() {
 
       HTTPClient http;                                                                                                                                                //Declare object of class HTTPClient
 
-      http.begin("http://log.brewfather.net/stream?idXXXXXXXXXXXXXXX");                                                                                               //Specify request destination, enter your Brewfather custom stream API key
+      http.begin("http://log.brewfather.net/stream?id=XXXXXXXXXXXXXX");                                                                                               //Specify request destination
       http.addHeader("Content-Type", "application/JSON");                                                                                                             //Specify content-type header
 
-      int httpCode = http.POST("{\r\n  \"name\": \"PressureSensor\", \r\n  \"pressure\": " + PressureValue_string + ",\r\n  \"pressure_unit\": \"BAR\"}");
+      int httpCode = http.POST("{\r\n  \"name\": \"PressureSensor2000\", \r\n  \"pressure\": " + PressureValue_string + ",\r\n  \"pressure_unit\": \"BAR\"}");
 
       String payload = http.getString();                                                                                                                              //Get the response payload
       Serial.print("HTTP return code: ");
